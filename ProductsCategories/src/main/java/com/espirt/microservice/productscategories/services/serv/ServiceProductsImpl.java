@@ -1,8 +1,7 @@
 package com.espirt.microservice.productscategories.services.serv;
 
-import com.espirt.microservice.productscategories.entity.Category;
+import com.espirt.microservice.productscategories.entity.Categorie;
 import com.espirt.microservice.productscategories.entity.Products;
-import com.espirt.microservice.productscategories.repository.CategoriesRepo;
 import com.espirt.microservice.productscategories.repository.ProductsRepo;
 import com.espirt.microservice.productscategories.services.Interfaces.IserviceProduts;
 import lombok.AllArgsConstructor;
@@ -17,7 +16,7 @@ import java.util.List;
 public class ServiceProductsImpl implements IserviceProduts {
 
     ProductsRepo productsRepo;
-    CategoriesRepo categoriesRepo;
+    //CategoriesRepo categoriesRepo;
 
     @Override
     public Products addProduct(Products product) {
@@ -25,20 +24,17 @@ public class ServiceProductsImpl implements IserviceProduts {
     }
 
     @Override
-    public Products updateProduct(Products product, String id) {
+    public Products updateProduct(Products product, Long id) {
         Products existingProduct = productsRepo.findById(id).orElse(null);
-
         if (existingProduct == null) {
             log.info("Product with ID {} not found", id);
             return null;
         }
-        Category category = categoriesRepo.findById(product.getCategory().getId()).orElse(null);
-        log.info("Category: {}", category);
-        if (category != null) {
-            existingProduct.setCategory(category);
-        }
 
-        // Mettre à jour uniquement les champs nécessaires
+        // Update category directly from enum
+        existingProduct.setCategory(product.getCategory());
+
+        // Update other fields
         existingProduct.setName(product.getName());
         existingProduct.setDescription(product.getDescription());
         existingProduct.setPrice(product.getPrice());
@@ -49,20 +45,18 @@ public class ServiceProductsImpl implements IserviceProduts {
         existingProduct.setDiscountPercentage(product.getDiscountPercentage());
         existingProduct.setIsActive(product.getIsActive());
 
-
-        // Sauvegarder et retourner l'objet mis à jour
         return productsRepo.save(existingProduct);
     }
 
 
     @Override
-    public void deleteProduct(String id) {
+    public void deleteProduct(Long id) {
         productsRepo.deleteById(id);
 
     }
 
     @Override
-    public Products getProductById(String id) {
+    public Products getProductById(Long id) {
         return productsRepo.findById(id).orElse(null);
     }
 
@@ -72,7 +66,8 @@ public class ServiceProductsImpl implements IserviceProduts {
     }
 
     @Override
-    public List<Products> getProductsByCategory(String id) {
-        return productsRepo.findByCategoryId(id);
+    public List<Products> getProductsByCategory(Categorie category) {
+        return productsRepo.findByCategory(category);
     }
+
 }

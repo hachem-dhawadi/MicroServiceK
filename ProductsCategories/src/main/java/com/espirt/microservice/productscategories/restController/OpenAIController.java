@@ -8,6 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gpt")
+@CrossOrigin(origins = "http://localhost:4200")  // Allow Angular frontend
 public class OpenAIController {
 
     @Autowired

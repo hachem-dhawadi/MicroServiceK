@@ -10,11 +10,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Products {
-    @ManyToOne(cascade = CascadeType.ALL)
-    Category category;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
+
+    @Enumerated(EnumType.STRING)  // Store enum as string in database
+    private Categorie category;  // Changed from Category entity to enum
+
     private String name;
     private String description;
     private Double price;
@@ -24,6 +26,4 @@ public class Products {
     private String sku;
     private Double discountPercentage;
     private Boolean isActive = true;
-
-
 }

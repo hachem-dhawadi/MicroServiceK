@@ -1,9 +1,11 @@
 package com.espirt.microservice.productscategories.restController;
 
+import com.espirt.microservice.productscategories.entity.Categorie;
 import com.espirt.microservice.productscategories.entity.Products;
 import com.espirt.microservice.productscategories.services.serv.ServiceProductsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,23 +34,24 @@ public class RestProductsController {
     }
 
     @GetMapping("/{id}")
-    public Products getProductById(@PathVariable String id) {
+    public Products getProductById(@PathVariable Long id) {
         return serviceProducts.getProductById(id);
     }
 
     @PutMapping("/{id}")
-    public Products updateProduct(@RequestBody Products product, @PathVariable String id) {
+    public Products updateProduct(@RequestBody Products product, @PathVariable Long id) {
         return serviceProducts.updateProduct(product, id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable String id) {
+    public void deleteProduct(@PathVariable Long id) {
         serviceProducts.deleteProduct(id);
     }
 
-    @GetMapping("/category/{id}")
-    public List<Products> getProductsByCategory(@PathVariable String id) {
-        return serviceProducts.getProductsByCategory(id);
+    // Change the category parameter type in the endpoint
+    @GetMapping("/category/{category}")
+    public List<Products> getProductsByCategory(@PathVariable Categorie category) {
+        return serviceProducts.getProductsByCategory(category);
     }
 
     @PostMapping("/upload")
@@ -65,7 +68,9 @@ public class RestProductsController {
             // Save file
             Files.write(path, file.getBytes());
 
-            return ResponseEntity.ok("Image uploaded successfully: " + fileName);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN) // Explicitly set content type
+                    .body("Image uploaded successfully: " + fileName);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to upload image: " + e.getMessage());
